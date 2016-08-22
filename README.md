@@ -135,6 +135,24 @@ producer.send({
 });
 ```
 
+### Proxy Settings
+
+Connect to a kafka server through a proxy (for example, connect to kafka running on an AWS EC2 instance through an ssh tunnel):
+
+```javascript
+const producer = new kafka.Producer({
+    connectionString: 'kafka://<ec2_private_ip/hostname>:9092',
+    proxy: {
+        '<ec2_private_ip/hostname>' : {
+            host: 'localhost',
+            port: 9093
+        }
+    }
+});
+```
+
+This will cause all connections to `<ec2_private_ip/hostname>` to be forwarded to `localhost:9093`. More instruction on setting up an ssh tunnel can be found here: [Setting up an SSH tunnel on Heroku](https://github.com/kollegorna/heroku-buildpack-autossh).
+
 ### Producer options:
 * `requiredAcks` - require acknoledgments for produce request. If it is 0 the server will not send any response.  If it is 1 (default), the server will wait the data is written to the local log before sending a response. If it is -1 the server will block until the message is committed by all in sync replicas before sending a response. For any number > 1 the server will block waiting for this number of acknowledgements to occur (but the server will never wait for more acknowledgements than there are in-sync replicas).
 * `timeout` - timeout in ms for produce request
@@ -152,6 +170,7 @@ producer.send({
   * `size` - group messages together into single batch until their total size exceeds this value, defaults to 16384 bytes. Set to 0 to disable batching.
   * `maxWait` - send grouped messages after this amount of milliseconds expire even if their total size doesn't exceed `batch.size` yet, defaults to 10ms. Set to 0 to disable batching.
 * `asyncCompression` - boolean, use asynchronouse compression instead of synchronous, defaults to `false`
+* `proxy` - object for mapping host names to their proxy counterparts
 
 ## SimpleConsumer
 
